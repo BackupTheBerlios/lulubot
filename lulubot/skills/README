@@ -1,0 +1,88 @@
+LuluBot Skills
+-----------------------------------------------------------------------
+
+Each dir is a skill. Main loaded file has to be name 
+with same as the dir plus .php, and dir can have anything 
+in more.
+
+------------------------------------------------------------------------
+nickometer : outputs the lame factor for a given nickname.
+
+- syntax: ,n <nick>	
+  <mose> ,n huhu
+  <lulubot8626> mose: 'huhu' is 0% lame
+
+------------------------------------------------------------------------
+faq : simple thesaurus of keywords associated with definitions.
+
+- syntax: ,f <keyword>
+  <mose> ,f mose
+  <lulu> mose: mose = geek of all trades
+
+- syntax: ,f- <keyword>
+  *** needs operator status ***
+  <mose> ,f- mose
+	<lulu> mose: okay I removed mose.
+
+- syntax: ,f+ <keyword> <definition>
+  *** needs operator status ***
+  <mose> ,f+ mose geek of all trades
+  <lulu> mose: okay I stored mose.
+
+note: faqs are stored in skills/faq/faq.#channel.txt files
+
+------------------------------------------------------------------------
+fortune : the traditional wisdom random dispatcher.
+
+- syntax: ,o
+  <mose> ,o
+  <lulu> mose: BOFH excuse #437:  crop circles in the corn shell
+
+------------------------------------------------------------------------
+google: wellknown search engine at http://google.com
+
+- syntax: ,g <words>
+  <mose> ,g lulu books
+  <lulu> mose: Books: Books : Lulu - url: http://books.lulu.com/browse/
+
+------------------------------------------------------------------------
+php: gives syntax of php functions.
+
+- syntax: ,php <function>
+  <mose> ,php strtok
+  <lulu> mose: strtok (string arg1, string arg2) - Tokenize string 
+               - http://php.net/strtok
+
+------------------------------------------------------------------------
+translate: Translates strings using babelfish.
+
+- syntax: ,tr <lang_lang> <anything>
+  <mose> ,tr en_fr hello kids
+  <lulu> mose: (en_fr) hello kids = bonjour gosses
+
+Available languages :
+  en_zh, en_fr, en_de, en_it, en_ja, en_ko, en_pt, en_es,
+  zh_en, fr_en, fr_de, de_en, de_fr, it_en, ja_en, ko_en,
+  pt_en, ru_en, es_en
+
+------------------------------------------------------------------------
+tikiwiki: provide the ability to communicate with a local tikiwiki.
+
+- syntax: ,tw <command> <parameters>
+  <mose> ,tw help
+  <lulu> mose: [,tw help] who stats rpage dir find
+
+------------------------------------------------------------------------
+tikipro: provide the ability to communicate with a local tikipro.
+
+- syntax: ,tp <command> <parameters>
+  <mose> ,tp help
+  <lulu> mose: [,tp help] who stats rpage dir find
+
+------------------------------------------------------------------------
+ 
+ ... more to come ...
+
+------------------------------------------------------------------------
+send new skills to mose at mose . fr
+

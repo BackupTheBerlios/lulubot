@@ -1,0 +1,89 @@
+Development notes
+-----------------------------------------------------------------------
+$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/README.dev,v 1.1 2004/07/05 18:48:30 mose Exp $
+
+That file is mainly a notes repository useful if you want to contribute
+to lulubot code.
+
+
+Note about contributing to LuluBot Project :
+-----------------------------------------------------------------------
+
+
+* LuluBot core contributions
+'''''''''''''''''''''''''''''''''
+It concerns all what is not in skills/ directory nor SmartIrc/. Once
+again there is a choice :
+
+- the change is minor, or you prefer not to bother, then you can give 
+  the copyright to the declared copyright holders by including the 
+  Licence header provided in INCLUDE_HEADER file (or INCLUDE_SHELL
+  for inclusion in a shell-type file).
+
+- contribution is significant, then you may join the group of 
+  copyright holders upon their agreement. Agreement acquisition is 
+  a request sent to each existing copyright holders and no negative
+  answer in two weeks and at least one positive answer.
+
+
+* Skills contributions
+'''''''''''''''''''''''''''''''''
+They are quite easy to add and remove, as modules, and are considered 
+as independant. For contributing skills authors have 2 choices :
+
+- either consider the skill contribution is similar to a core
+  contribution, in which case apply conditions explained above.
+
+- either use a LGPL or BSD, in which case the skill will be bundled
+  in the main LGPL LuluBot package. 
+
+- either use your own choice of OSI-compliant free software licence
+  then it will be available but packaged in an extra multi-licenced
+  package.
+
+
+* SmartIrc 
+'''''''''''''''''''''''''''''''''
+The content of SmartIrc and SmartIrc.php are an independant
+third-party source code. Do not change anything there, prefer to 
+contribute to SmartIrc project directly : 
+
+  http://sf.net/projects/phpsmartirc
+
+
+* Current copyright holders
+'''''''''''''''''''''''''''''''''
+* Lulu Enterprises, Inc., patron,
+  represented by Christian Fowler <cfowler@lulu.com>
+* mose <mose@mose.fr>, main coder and maintainer
+
+
+-----------------------------------------------------------------------
+Content of &$data :
+
+net_smartirc_data Object
+(
+    [from] => zom!mose@80.67.179.82
+    [nick] => zom
+    [ident] => mose
+    [host] => 80.67.179.82
+    [channel] => #lulubot
+    [message] => hey
+    [messageex] => Array
+        (
+            [0] => hey
+        )
+
+    [type] => 2
+    [rawmessage] => :zom!mose@80.67.179.82 PRIVMSG #lulubot :hey
+    [rawmessageex] => Array
+        (
+            [0] => :zom!mose@80.67.179.82
+            [1] => PRIVMSG
+            [2] => #lulubot
+            [3] => :hey
+        )
+
+)
+
+-----------------------------------------------------------------------
