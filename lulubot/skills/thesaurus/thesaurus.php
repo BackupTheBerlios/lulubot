@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/thesaurus/thesaurus.php,v 1.1 2004/07/05 18:48:43 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/thesaurus/thesaurus.php,v 1.2 2004/11/27 10:59:01 mose Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://forge.tikipro.org/projects/lulubot/
@@ -46,7 +46,7 @@ class thesaurus extends skill {
 	function thes_search(&$irc,&$data,$url,$param) {
 		$buffer = "";
 		if ($fp = fsockopen ("thesaurus.reference.com", 80, $errno, $errstr, 30)) {
-			fputs ($fp, "GET $url HTTP/1.0\r\nHost: perdu.com\r\n\r\n");
+			fputs ($fp, "GET $url HTTP/1.0\r\nHost: thesaurus.reference.com\r\n\r\n");
 			while (!feof($fp)) $buffer .= fgetss ($fp, 1024);
 			fclose ($fp);
 			$this->log(&$irc,&$data,"thes for ".$param);
