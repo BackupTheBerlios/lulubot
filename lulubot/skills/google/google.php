@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/google/google.php,v 1.1 2004/07/05 18:48:42 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/google/google.php,v 1.2 2004/07/10 05:05:10 mose Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://forge.tikipro.org/projects/lulubot/
@@ -45,26 +45,24 @@ class google extends skill {
 
 	function google_search(&$irc,&$data,$url,$param) {
 		$buffer = "";
-		if ($fp = fsockopen ("www.google.com", 80, $errno, $errstr, 30)) {
-			fputs ($fp, "GET $url HTTP/1.0\r\nHost: perdu.com\r\n\r\n");
-			while (!feof($fp)) $buffer .= fgets ($fp, 1024);
-			fclose ($fp);
+		if ($buffer = $this->http_get($url)) {
 			$this->log(&$irc,&$data,"googles for ".$param);
+			$start = strpos ($buffer, 'class=g')+16;
+			$buffer = substr($buffer, $start);
+			$end = strpos ($buffer, '</a>');
+			$buffer = substr($buffer, 0, $end);
+			$buffer = str_replace('</b>', '', $buffer);
+			$buffer = str_replace('<b>', '', $buffer);
+			$buffer = str_replace('&#39;', "'", $buffer);
+			$results = explode('>',$buffer);
+			if ($results[1] != '<head') {
+				$this->talk(&$irc,&$data,$results[1].' ('.$results[0].')');
+			} else {
+				$this->talk(&$irc,&$data,'Search string not found');
+			}
 		} else {
+			$this->talk(&$irc,&$data,'impossible to connect google.');
 			$this->log(&$irc,&$data,"googles for ".$param." and socket failed : $errstr ($errno)");
-		}
-		$start = strpos ($buffer, 'class=g')+16;
-		$buffer = substr($buffer, $start);
-		$end = strpos ($buffer, '</a>');
-		$buffer = substr($buffer, 0, $end);
-		$buffer = str_replace('</b>', '', $buffer);
-		$buffer = str_replace('<b>', '', $buffer);
-		$buffer = str_replace('&#39;', "'", $buffer);
-		$results = explode('>',$buffer);
-		if ($results[1] != '<head') {
-			$this->talk(&$irc,&$data,$results[1].' ('.$results[0].')');
-		} else {
-			$this->talk(&$irc,&$data,'Search string not found');
 		}
 	}
 

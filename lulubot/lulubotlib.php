@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubotlib.php,v 1.2 2004/07/10 00:57:02 wolff_borg Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubotlib.php,v 1.3 2004/07/10 05:05:10 mose Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -221,6 +221,21 @@ class skill {
 	function unhtmlentities($string) {
 		$trans_tbl = array_flip(get_html_translation_table (HTML_ENTITIES));
 		return strtr($string, $trans_tbl);
+	}
+
+	function http_get($url) {
+		$buffer = '';
+		$u = parse_url($url);
+		if (!isset($u['port']) or !$u['port']) {
+			$u['port'] = 80;
+		}
+		if ($fp = fsockopen ($u['host'],$u['port'],&$errno, &$errstr, 10)) {
+			fputs ($fp, "GET $url HTTP/1.0\r\nHost: ".$u['host']."\r\n\r\n");
+			while (!feof($fp)) $buffer .= fgets ($fp, 1024);
+			fclose ($fp);			
+			return $buffer;
+		}
+		return false;
 	}
 
 }
