@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubotlib.php,v 1.1 2004/07/05 18:48:25 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubotlib.php,v 1.2 2004/07/10 00:57:02 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -69,7 +69,7 @@ class lulubot {
 		}
 		
 		// smartirc setup
-		$irc->setDebug(SMARTIRC_DEBUG_ALL);
+		$irc->setDebug(SMARTIRC_DEBUG_NOTICE);
 		$irc->setLogfile(LULUBOT_LOGDIR.'debug.log');
 		$irc->setLogdestination(SMARTIRC_FILE);
 		$irc->setUseSockets(true);
@@ -152,7 +152,7 @@ class lulubot {
 			default:
 				$line = $data->rawmessage;
 		}
-		if ($data->channel) {
+		if ($data->channel and isset($this->logpointer[$data->channel])) {
 			fwrite($this->logpointer[$data->channel],"$now $line\n");
 			$this->chanusers[$data->channel] = array_keys($irc->channel[$data->channel]->users);
 		} else {
