@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/tikipro/tikipro.php,v 1.1 2004/07/05 18:48:31 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/tikipro/tikipro.php,v 1.2 2004/07/10 00:45:35 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -21,7 +21,7 @@
 
 */
 
-if (!defined('TIKIPRO_NAME')) define('TIKIPRO_NAME', 'TikiPRO');
+if (!defined('TIKIPRO_NAME')) define('TIKIPRO_NAME', 'Tikipro');
 if (!defined('TIKIPRO_PATH')) define('TIKIPRO_PATH', '/var/www/tp/');    // don't forget ending slash
 if (!defined('TIKIPRO_URL'))  define('TIKIPRO_URL',  'http://localhost/tp/');  // don't forget ending slash
 
@@ -32,7 +32,7 @@ class tikipro extends skill {
 	var $statslib;
 
 	function tikipro() { 
-		$this->name = 'tikirpo';
+		$this->name = 'tikipro';
 		$this->description = "Tikipro skills provide the bot the ability to communicate with local tikipro instance.";
 		$this->actions[] = array(
 			'function' => 'tiki_do',
@@ -40,10 +40,11 @@ class tikipro extends skill {
 			'name'     => 'Tikipro',
 			'help'     => 'Type ,tp <command> <something> to execute a request. ,t help to have a list.'
 		);
+		$oldpath = getcwd();
 		chdir(TIKIPRO_PATH);
-		define('TIKI_ROOT_PATH',TIKIPRO_PATH);
-		include_once("kernel/setup_inc.php");
+		include_once("tiki_setup_inc.php");
 		include_once("stats/stats_lib.php");
+		chdir($oldpath);
 		$this->gTikiSystem =& $gTikiSystem;
 		$this->userlib =& $userlib;
 		$this->statslib =& $statslib;
@@ -58,7 +59,7 @@ class tikipro extends skill {
 		} else {
 			global $gTikiSystem;
 			list($page) = $this->gTikiSystem->get_random_pages("1");
-			return "Want a page ? Try that one : ".TIKIPRO_URL."$page !";
+			return "Want a page ? Try that one : ".TIKIPRO_URL."wiki/index.php?page=$page !";
 		}
 	}
 
@@ -66,7 +67,7 @@ class tikipro extends skill {
 		if (isset($args[0]) and $args[0] == 'help') {
 			return "[,tp who] Returns who is connected on ".TIKIPRO_NAME." right now.";
 		} else {
-			$users = $this->gTikiSystem->get_online_users();
+			$users = $this->userlib->get_online_users();
 			foreach ($users as $u) {
 				$all[] = $u['user'];
 			}
@@ -86,7 +87,7 @@ class tikipro extends skill {
 			return "[,tp stats] Returns statistics of usage of ".TIKIPRO_NAME;
 		} else {
 			$i = $this->statslib->site_stats();
-			return "Since ".date("Y-m-d",$i["started"])." (".$i["days"]." days) we got ".$i["pageviews"]." pages viewed on tw.o (".round($i["ppd"])." per day).";
+			return "Since ".date("Y-m-d",$i["started"])." (".$i["days"]." days) we got ".$i["pageviews"]." pages viewed on ".TIKIPRO_NAME." (".round($i["ppd"])." per day).";
 		}
 	}
 
@@ -112,7 +113,7 @@ class tikipro extends skill {
 			}
 			$page = $this->gTikiSystem->list_pages($arg, 1, 'lastModif_desc', implode(' ',$args));
 			if ($page['cant'] > 0) {
-				return "Match ".$args[0]." in (".TIKIPRO_URL.$page['data'][0]['pageName'].")(#".$arg.")";
+				return "Match ".$args[0]." in (".TIKIPRO_URL."wiki/index.php?page=".$page['data'][0]['pageName'].")(#".$arg.")";
 			} else {
 				return "Sorry, no page name matches ".implode(' ',$args);
 			}
