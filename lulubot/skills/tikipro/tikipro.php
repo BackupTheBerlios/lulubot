@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/tikipro/tikipro.php,v 1.2 2004/07/10 00:45:35 wolff_borg Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/tikipro/tikipro.php,v 1.3 2005/06/19 09:08:22 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -43,31 +43,38 @@ class tikipro extends skill {
 		$oldpath = getcwd();
 		chdir(TIKIPRO_PATH);
 		include_once("tiki_setup_inc.php");
-		include_once("stats/stats_lib.php");
+		include_once( STATS_PKG_PATH."stats_lib.php" );
+		include_once( USERS_PKG_PATH."TikiUser.php" );
+		include_once( WIKI_PKG_PATH."TikiPage.php" );
+		include_once( WIKI_PKG_PATH."wiki_lib.php" );
 		chdir($oldpath);
 		$this->gTikiSystem =& $gTikiSystem;
-		$this->userlib =& $userlib;
+		$this->gTikiUser =& $gTikiUser;
 		$this->statslib =& $statslib;
+		$this->wikilib =& $wikilib;
 	}
 
 // **************************************************************************
 
 
 	function tiki_rpage($args) {
-		if (isset($args[0]) and $args[0] == 'help') {
+		if (isset($args[0]) && ($args[0] == 'help' || $args[0] == '?')) {
 			return "[,tp rpage] Returns a random wiki page url.";
 		} else {
-			global $gTikiSystem;
-			list($page) = $this->gTikiSystem->get_random_pages("1");
-			return "Want a page ? Try that one : ".TIKIPRO_URL."wiki/index.php?page=$page !";
+			$page = array_pop($this->wikilib->get_random_pages("1"));
+			$page = htmlspecialchars($page);
+			/* Change the whitespace into _*/
+			$page = preg_replace("/ /", "+", $page);
+			return "Want a page ? Try that one : ".TIKIPRO_URL.WIKI_PKG_URL."index.php?page=$page !";
 		}
 	}
 
 	function tiki_who($args) {
-		if (isset($args[0]) and $args[0] == 'help') {
+		if (isset($args[0]) && ($args[0] == 'help' || $args[0] == '?')) {
 			return "[,tp who] Returns who is connected on ".TIKIPRO_NAME." right now.";
 		} else {
-			$users = $this->userlib->get_online_users();
+			global $gTikiUser;
+			$users = $gTikiUser->get_online_users();
 			foreach ($users as $u) {
 				$all[] = $u['user'];
 			}
@@ -83,7 +90,7 @@ class tikipro extends skill {
 	}
 	
 	function tiki_stats($args) {
-		if (isset($args[0]) and $args[0] == 'help') {
+		if ((isset($args[0]) && ($args[0] == 'help' || $args[0] == '?'))) {
 			return "[,tp stats] Returns statistics of usage of ".TIKIPRO_NAME;
 		} else {
 			$i = $this->statslib->site_stats();
@@ -92,7 +99,7 @@ class tikipro extends skill {
 	}
 
 	function tiki_dir($args) {
-		if (isset($args[0]) and $args[0] == 'help') {
+		if (isset($args[0]) && ($args[0] == 'help' || $args[0] == '?')) {
 			return "[,tp dir] Returns the last added directory site";
 		} else {
 			if (!isset($args[0]) or $args[0] < 0 or $args[0] > 20) { $args[0] = 0; }
@@ -102,7 +109,7 @@ class tikipro extends skill {
 	}
 
 	function tiki_find($args) {
-		if (isset($args[0]) and $args[0] == 'help') {
+		if (!isset($args[0]) || (isset($args[0]) && ($args[0] == 'help' || $args[0] == '?'))) {
 			return "[,tp find] Finds a wiki page including string";
 		} else {
 			$page = array();
@@ -111,9 +118,11 @@ class tikipro extends skill {
 			} else {
 				$arg = 0;
 			}
-			$page = $this->gTikiSystem->list_pages($arg, 1, 'lastModif_desc', implode(' ',$args));
+			$content = new TikiPage();
+			$page = $content->getList($arg, 1, 'last_modified_desc', implode(' ',$args));
+
 			if ($page['cant'] > 0) {
-				return "Match ".$args[0]." in (".TIKIPRO_URL."wiki/index.php?page=".$page['data'][0]['pageName'].")(#".$arg.")";
+				return "Match ".$args[0]." in (".TIKIPRO_URL.$page['data'][0]['display_link'].")(#".$arg.")";
 			} else {
 				return "Sorry, no page name matches ".implode(' ',$args);
 			}
@@ -121,10 +130,10 @@ class tikipro extends skill {
 	}
 	
 	function tiki_help($args) {
-		if (isset($args[0])) {
+		if (isset($args[0]) && ($args[0] == 'help' || $args[0] == '?')) {
 			$help = "tiki_".$args[0];
 		}
-		if (method_exists($this,$help)) {
+		if (isset($help) && method_exists($this,$help)) {
 			return $this->$help('help',1);
 		} else {
 			return "[,tp help] who stats rpage dir find";
@@ -142,8 +151,8 @@ class tikipro extends skill {
 		} else {
 			$back = $this->$method($args);
 		}
-		$this->talk(&$irc,&$data,$back);
-		$this->log(&$irc,&$data,$back);
+		$this->talk($irc,$data,$back);
+		$this->log($irc,$data,$back);
 	}
 
 
