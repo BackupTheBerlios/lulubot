@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/sourceforge/sourceforge.php,v 1.1 2004/07/18 10:46:18 wolff_borg Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/sourceforge/sourceforge.php,v 1.2 2005/06/19 09:09:56 wolff_borg Exp $
 
   Copyright (c) 2004 Stephan Borg
   http://lulubot.berlios.de/
@@ -21,7 +21,7 @@
 
 */
 
-require_once('lib/pear/HTTP/Request.php');
+//require_once('lib/pear/HTTP/Request.php');
 
 if (!defined('SOURCEFORGE_NAME')) define('SOURCEFORGE_NAME', 'SourceForge.net');
 if (!defined('SOURCEFORGE_PROJECT')) define('SOURCEFORGE_PROJECT', 'tikipro');    // don't forget ending slash
@@ -50,43 +50,67 @@ class sourceforge extends skill {
 // **************************************************************************
 
 	function getTrackerURL($project, $regex, $status) {
-		$req = new HTTP_Request(SOURCEFORGE_PROJECT_URL.$project);
-		if (PEAR::isError($oError=$req->sendRequest())) {
-			return "An error occurred retrieving URL";
-		}
-		$data = $req->getResponseBody();
+echo "U: ".SOURCEFORGE_PROJECT_URL.$project."\n";
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,SOURCEFORGE_PROJECT_URL.$project);
+		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_POST, 1);
+//		curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+		ob_start();
+		curl_exec ($ch);
+		$data = ob_get_contents();
+		ob_end_clean();
+		curl_close ($ch);
+echo "W: $data\n";
 		$matches = array();
 		preg_match($regex, $data, $matches);
 		$url = (function_exists('html_entity_decode')) ? html_entity_decode($matches[1]) : str_replace(array("&gt;", "&lt;", "&quot;", "&amp;"), array(">", "<", "\"", "&"), $matches[1]);
-		return "http://sourceforge.net".$url.$this->hrefOpts.$this->statusOpt[$status];
+		return "http://sourceforge.net".$url.$this->hrefOpts.$status;
 	}
 
 	function getTrackerList($url) {
-		$req = new HTTP_Request($url);
-		if (PEAR::isError($oError=$req->sendRequest())) {
-			return "An error occurred retrieving URL";
-		}
-		$data = $req->getResponseBody();
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,$url);
+		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_POST, 1);
+//		curl_setopt($ch, CURLOPT_POSTFIELDS, $str);
+		ob_start();
+		curl_exec ($ch);
+		$data = ob_get_contents();
+		ob_end_clean();
+		curl_close ($ch);
 		$head = '#%s: %s';
-		
+		return $this->formatResp($data);
 	}
 
 	function formatResp($text, $num = '') {
-//		if ($num) {
+		if ($num) {
+		} else {
+			return strip_tags($text);
+		}
 			
 	}
 
 	function sf_bugs($args) {
 		$project = SOURCEFORGE_PROJECT;
-		if (isset($args[0]) and $args[0] == 'help') {
+		if (isset($args[0]) and ($args[0] == 'help' || $args[0] == '?')) {
 			return "[,sf bugs [any,open,closed,deleted,pending] [<project>]] Returns a list of the most recent bugs filed against <project>. <project> is not needed if there is a default project set. Search defaults to open bugs.";
-		} else {
+		} elseif (!isset($args[0])) {
 			$status = 'open';
+		} else {
+			$status = $args[0];
 		}
 		if (isset($args[1])) {
 			$project = $args[1];
 		}
-		return $this->getTrackerURL($project, $this->bugLink, $status);
+		$url = $this->getTrackerURL($project, $this->bugLink, $this->statusOpt[$status]);
+		return $this->getTrackerList($url);
 	}
 
 	function sf_who($args) {
@@ -154,7 +178,7 @@ class sourceforge extends skill {
 		if (isset($help) and method_exists($this,$help)) {
 			return $this->$help('help',1);
 		} else {
-			return "[,sf help] bugs rfes sf totalbugs totalrfes tracker";
+			return "[,sf [bugs rfes sf totalbugs totalrfes tracker] help] for more detailed info";
 		}
 	}
 
@@ -162,6 +186,12 @@ class sourceforge extends skill {
 // **************************************************************************
 
 	function sf_do(&$irc,&$data) {
+		if(!function_exists('curl_init')) {
+			$this->talk($irc,$data,'SOURCEFORGE: Not fully enabled. See log for details.');
+			$this->log($irc,$data,"SOURCEFORGE: Requires curl support to work.");
+			return;
+		}
+		
 		$method = "sf_".$data->messageex[1];
 		$args = array_slice($data->messageex,2);
 		if (!method_exists($this,$method)) {
@@ -169,8 +199,8 @@ class sourceforge extends skill {
 		} else {
 			$back = $this->$method($args);
 		}
-		$this->talk(&$irc,&$data,$back);
-		$this->log(&$irc,&$data,$back);
+		$this->talk($irc,$data,$back);
+		$this->log($irc,$data,$back);
 	}
 
 
