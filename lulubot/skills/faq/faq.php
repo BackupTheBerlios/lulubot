@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/faq/faq.php,v 1.1 2004/07/05 18:48:42 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/faq/faq.php,v 1.2 2005/06/19 09:05:41 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -54,16 +54,33 @@ class faq extends skill {
 	function read_faq(&$irc,&$data) {
 		array_shift($data->messageex);
 		$item = array_shift($data->messageex);
-		$this->log(&$irc,&$data,"asks for ".$item);
+		$this->log($irc,$data,"asks for ".$item);
 		$found = false;
-		if ($data->channel) {
-			$fp = fopen('skills/faq/faq.'.$data->channel.'.txt', 'r');
+		$faq = 'skills/faq/faq.'.$data->channel.'.txt';
+		if ($data->channel && file_exists($faq)) {
+			$fp = fopen($faq, 'r');
 			if ($fp) {
 				while (!feof($fp)) {
 					$output = explode(":-:",fgets($fp,10000));
 					if ($output[0] == $item) {
-						$this->talk(&$irc,&$data,$item.' = '.$output[1]);
-						$this->log(&$irc,&$data,"gets ".$item." = ".$output[1]);
+						$this->talk($irc,$data,$item.' = '.$output[1]);
+						$this->log($irc,$data,"gets ".$item." = ".$output[1]);
+						$found = true;
+						break;
+					}
+				}
+			}
+			fclose($fp);
+		}
+		$faq = 'skills/faq/faq.txt';
+		if (!$found && file_exists($faq)) {
+			$fp = fopen($faq, 'r');
+			if ($fp) {
+				while (!feof($fp)) {
+					$output = explode(":-:",fgets($fp,10000));
+					if ($output[0] == $item) {
+						$this->talk($irc,$data,$item.' = '.$output[1]);
+						$this->log($irc,$data,"gets ".$item." = ".$output[1]);
 						$found = true;
 						break;
 					}
@@ -72,23 +89,8 @@ class faq extends skill {
 			fclose($fp);
 		}
 		if (!$found) {
-			$fp = fopen('skills/faq/faq.txt', 'r');
-			if ($fp) {
-				while (!feof($fp)) {
-					$output = explode(":-:",fgets($fp,10000));
-					if ($output[0] == $item) {
-						$this->talk(&$irc,&$data,$item.' = '.$output[1]);
-						$this->log(&$irc,&$data,"gets ".$item." = ".$output[1]);
-						$found = true;
-						break;
-					}
-				}
-			}
-			fclose($fp);
-		}
-		if (!$found) {
-			$this->talk(&$irc,&$data,'I dont know what that is.');
-			$this->log(&$irc,&$data,'not found '.$item.'.');
+			$this->talk($irc,$data,'I dont know what that is.');
+			$this->log($irc,$data,'not found '.$item.'.');
 		}
 	}
 
@@ -104,8 +106,8 @@ class faq extends skill {
 		$fp = fopen($faq, 'a');
 		fputs($fp,$item.":-:".$def."\n");
 		fclose($fp);
-		$this->talk(&$irc,&$data,'okay I stored '.$item.'.');
-		$this->log(&$irc,&$data,'added in '.$faq.' : '.$item.' = '.$def);
+		$this->talk($irc,$data,'okay I stored '.$item.'.');
+		$this->log($irc,$data,'added in '.$faq.' : '.$item.' = '.$def);
 	}
 
 
@@ -129,8 +131,8 @@ class faq extends skill {
 			if (substr($line,0,strlen($item)) != $item and trim($line)) fputs($fp, $line);
 		}
 		fclose($fp);
-		$this->talk(&$irc,&$data,'okay I removed '.$item.'.');
-		$this->log(&$irc,&$data,'removed '.$item.'.');
+		$this->talk($irc,$data,'okay I removed '.$item.'.');
+		$this->log($irc,$data,'removed '.$item.'.');
 	}
 
 }
