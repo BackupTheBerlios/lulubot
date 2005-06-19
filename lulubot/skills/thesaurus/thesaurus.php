@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/thesaurus/thesaurus.php,v 1.2 2004/11/27 10:59:01 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/thesaurus/thesaurus.php,v 1.3 2005/06/19 09:00:17 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://forge.tikipro.org/projects/lulubot/
@@ -40,7 +40,7 @@ class thesaurus extends skill {
 	function thes(&$irc,&$data) {
 		$param = implode(" ", array_slice($data->messageex,1));
 		$url = "http://thesaurus.reference.com/search?q=".urlencode($param);
-		$this->thes_search(&$irc,&$data,$url,$param);
+		$this->thes_search($irc,$data,$url,$param);
 	}
 
 	function thes_search(&$irc,&$data,$url,$param) {
@@ -49,25 +49,24 @@ class thesaurus extends skill {
 			fputs ($fp, "GET $url HTTP/1.0\r\nHost: thesaurus.reference.com\r\n\r\n");
 			while (!feof($fp)) $buffer .= fgetss ($fp, 1024);
 			fclose ($fp);
-			$this->log(&$irc,&$data,"thes for ".$param);
+			$this->log($irc,$data,"thes for ".$param);
 		} else {
-			$this->log(&$irc,&$data,"thes for ".$param." and socket failed : $errstr ($errno)");
+			$this->log($irc,$data,"thes for ".$param." and socket failed : $errstr ($errno)");
 		}
 		
-		$start = strpos ($buffer, 'Entry:') + 7;
+		$start = strpos ($buffer, 'Entry:') + 6;
 		echo substr($buffer,0,255);
 		$buffer = substr($buffer, $start);
 		echo substr($buffer,0,255);
 		$end = strpos ($buffer, 'Source:');
 		$buffer = substr($buffer, 0, $end);
 		echo substr($buffer,0,255);
-		//$buffer = str_replace('</b>', '', $buffer);
-		//$buffer = str_replace('<b>', '', $buffer);
+		$buffer = html_entity_decode($buffer);
 		$buffer = str_replace("\n", ' ', $buffer);
 		if ($buffer) {
-			$this->talk(&$irc,&$data,$buffer);
+			$this->talk($irc,$data,$buffer);
 		} else {
-			$this->talk(&$irc,&$data,'Search string not found');
+			$this->talk($irc,$data,'Search string not found');
 		}
 	}
 
