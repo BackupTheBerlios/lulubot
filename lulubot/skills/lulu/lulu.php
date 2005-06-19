@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/lulu/lulu.php,v 1.1 2004/07/05 18:48:31 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/lulu/lulu.php,v 1.2 2005/06/19 09:02:23 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -27,8 +27,8 @@ class lulu extends skill {
 	var $lang = array();
 
 	function lulu() { 
-		$this->name = 'translate';
-		$this->description = "Translates strings using babelfish.";
+		$this->name = 'lulu';
+		$this->description = "Search the Lulu knowledgebase";
 		$this->actions[] = array(
 			'function' => 'lulu_kdb',
 			'trigger'  => '^,l ',
@@ -43,8 +43,8 @@ class lulu extends skill {
 		array_shift($data->messageex);
 		$param = implode(" ", $data->messageex);
 		if(!function_exists('curl_init')) {
-			$this->talk(&$irc,&$data,'Not fully enabled. See log for details.');
-			$this->log(&$irc,&$data,"Requires curl support to work.");
+			$this->talk($irc,$data,'Not fully enabled. See log for details.');
+			$this->log($irc,$data,"Requires curl support to work.");
 			return;
 		}
 		$buffer = '';
@@ -71,10 +71,10 @@ class lulu extends skill {
 		$title = substr($buffer,0,$end);
 		echo "$node : $title\n";
 		if(!empty($buffer)) {
-			$this->log(&$irc,&$data,"$param found '$title' (http://lulu.com/help/node/view/$node)");
-			$this->talk(&$irc,&$data,"$param found '$title' (http://lulu.com/help/node/view/$node)");
+			$this->log($irc,$data,"$param found '$title' (http://lulu.com/help/node/view/$node)");
+			$this->talk($irc,$data,"$param found '$title' (http://lulu.com/help/node/view/$node)");
 		} else {
-			$this->talk(&$irc,&$data,'Sorry no result.');
+			$this->talk($irc,$data,'Sorry no result.');
 		}
 	}
 
