@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubot_go.php,v 1.1 2004/07/05 18:48:23 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubot_go.php,v 1.2 2005/06/19 08:25:17 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -25,6 +25,6 @@
 include('lulubotlib.php');
 
 $irc = &new Net_SmartIRC();
-$bot = &new lulubot(&$irc);
+$bot = &new lulubot($irc);
 
 ?>

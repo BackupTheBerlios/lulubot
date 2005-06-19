@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubotlib.php,v 1.3 2004/07/10 05:05:10 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/lulubotlib.php,v 1.4 2005/06/19 08:25:17 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -58,7 +58,7 @@ class lulubot {
 		$this->conf['usermode'] = '0';
 		$this->conf['join'][]   = '#lulubot';
 		$this->conf['skills']   = array();
-		$this->run(&$irc);
+		$this->run($irc);
 	}
 	
 	function run(&$irc) {
@@ -87,7 +87,7 @@ class lulubot {
 				include_once(LULUBOT_MODULEDIR.$m.'/'.$m.'.php');
 				$irc->log(SMARTIRC_DEBUG_MODULES,"DEBUG_MODULES: Acquiring *$m*");
 				$this->skills[$m] = &new $m;
-				$this->skills[$m]->learn(&$irc);
+				$this->skills[$m]->learn($irc);
 			} else {
 				$irc->log(SMARTIRC_DEBUG_MODULES,"DEBUG_MODULES: module *$m* not found");
 			}
@@ -96,7 +96,7 @@ class lulubot {
 		$irc->login($this->conf['nick'], $this->conf['realname'], $this->conf['usermode'], $this->conf['username']);
 		$irc->join($this->conf['join']);
 		if (LULUBOT_LOG) {
-			$this->startlog(&$irc);
+			$this->startlog($irc);
 		}
 		$irc->listen();
 		$irc->disconnect();
@@ -111,7 +111,7 @@ class lulubot {
 		$irc->registerActionhandler(
 			SMARTIRC_TYPE_CHANNEL|SMARTIRC_TYPE_NOTICE|SMARTIRC_TYPE_JOIN|
 			SMARTIRC_TYPE_ACTION|SMARTIRC_TYPE_TOPICCHANGE|SMARTIRC_TYPE_NICKCHANGE|
-			SMARTIRC_TYPE_QUIT|SMARTIRC_TYPE_PART,'.*',&$this,'log2file');
+			SMARTIRC_TYPE_QUIT|SMARTIRC_TYPE_PART,'.*',$this,'log2file');
 		foreach ($this->conf['join'] as $where) {
 			$this->logpointer["$where"] = fopen(LULUBOT_LOGDIR.$where.'.log','a');
 			$this->chanusers["$where"] = array();
@@ -185,7 +185,7 @@ class skill {
 
 	function learn(&$irc) {
 		foreach ($this->actions as $i=>$a) {
-			$this->actions[$i]['id'] = $irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL|SMARTIRC_TYPE_QUERY,$a['trigger'],&$this,$a['function']);
+			$this->actions[$i]['id'] = $irc->registerActionhandler(SMARTIRC_TYPE_CHANNEL|SMARTIRC_TYPE_QUERY,$a['trigger'],$this,$a['function']);
 		}
 		$irc->log(SMARTIRC_DEBUG_MODULES, 'DEBUG_MODULES: *** init '.$this->name);
   } 
@@ -229,7 +229,7 @@ class skill {
 		if (!isset($u['port']) or !$u['port']) {
 			$u['port'] = 80;
 		}
-		if ($fp = fsockopen ($u['host'],$u['port'],&$errno, &$errstr, 10)) {
+		if ($fp = fsockopen ($u['host'],$u['port'],$errno, $errstr, 10)) {
 			fputs ($fp, "GET $url HTTP/1.0\r\nHost: ".$u['host']."\r\n\r\n");
 			while (!feof($fp)) $buffer .= fgets ($fp, 1024);
 			fclose ($fp);			

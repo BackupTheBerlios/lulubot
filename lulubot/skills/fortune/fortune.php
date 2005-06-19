@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/fortune/fortune.php,v 1.1 2004/07/05 18:48:31 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/fortune/fortune.php,v 1.2 2005/06/19 08:25:17 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -40,8 +40,8 @@ class fortune extends skill {
 	function tell_fortune(&$irc,&$data) {
 		$fortune = str_replace("\n"," ",`/usr/games/fortune`);
 		$fortune = preg_replace("/\s+/"," ",$fortune);
-		$this->talk(&$irc,&$data,$fortune);
-		$this->log(&$irc,&$data,"asks for a fortune.");
+		$this->talk($irc,$data,$fortune);
+		$this->log($irc,$data,"asks for a fortune.");
 	}
 
 }
