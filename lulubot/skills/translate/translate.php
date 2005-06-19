@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/translate/translate.php,v 1.1 2004/07/05 18:48:43 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/translate/translate.php,v 1.2 2005/06/19 08:58:34 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -36,25 +36,42 @@ class translate extends skill {
 			'help'     => 'Type ,tr <lang_lang> <anything> to translate <anything> from lang to lang.'
 		);
 		$this->langs = array(
-			'en_zh',
-			'en_fr',
+			'de_en',
+			'de_fr',
+			'el_en',
+			'el_fr',
 			'en_de',
+			'en_el',
+			'en_es',
+			'en_fr',
 			'en_it',
 			'en_ja',
 			'en_ko',
+			'en_nl',
 			'en_pt',
-			'en_es',
-			'zh_en',
-			'fr_en',
+			'en_ru',
+			'en_zh',
+			'en_zt',
+			'es_en',
+			'es_fr',
 			'fr_de',
-			'de_en',
-			'de_fr',
+			'fr_el',
+			'fr_en',
+			'fr_es',
+			'fr_it',
+			'fr_nl',
+			'fr_pt',
 			'it_en',
+			'it_fr',
 			'ja_en',
 			'ko_en',
+			'nl_en',
+			'nl_fr',
 			'pt_en',
+			'pt_fr',
 			'ru_en',
-			'es_en'
+			'zh_en',
+			'zt_en'
 		);
 	}
 
@@ -66,13 +83,13 @@ class translate extends skill {
 		$param = implode(" ", $data->messageex);
 		
 		if(!function_exists('curl_init')) {
-			$this->talk(&$irc,&$data,'TRANSLATE: Not fully enabled. See log for details.');
-			$this->log(&$irc,&$data,"TRANSLATE: Requires curl support to work.");
+			$this->talk($irc,$data,'TRANSLATE: Not fully enabled. See log for details.');
+			$this->log($irc,$data,"TRANSLATE: Requires curl support to work.");
 			return;
 		}
 		
-		if (!in_array($lang,$this->langs)) {
-			$this->talk(&$irc,&$data,'TRANSLATE: language not available.');
+		if ($lang != '?' && $lang != 'help' && !in_array($lang,$this->langs)) {
+			$this->talk($irc,$data,'TRANSLATE: valid language code are - '.join($this->langs,", "));
 			return;
 		}
 		if($param and $lang) {
@@ -96,16 +113,16 @@ class translate extends skill {
 			$end = strpos ($buffer, '</div>');
 			$buffer = trim(substr($buffer, 0, $end));
 			if (strstr($buffer,"The translation server is currently unavailable")) {
-				$this->talk(&$irc,&$data,'Sorry, BabelFish is down.');
-				$this->log(&$irc,&$data,"TRANSLATE: BabelFish unavalaible");
+				$this->talk($irc,$data,'Sorry, BabelFish is down.');
+				$this->log($irc,$data,"TRANSLATE: BabelFish unavalaible");
 			} elseif(!empty($buffer)) {
-				$this->log(&$irc,&$data,"TRANSLATE: Translating '$param' with '$lang'.");
-				$this->talk(&$irc,&$data,'('.$lang.') '.$param." = ".$buffer);
+				$this->log($irc,$data,"TRANSLATE: Translating '$param' with '$lang'.");
+				$this->talk($irc,$data,'('.$lang.') '.$param." = ".$buffer);
 			} else {
-				$this->talk(&$irc,&$data,'There was an error translating your text.');
+				$this->talk($irc,$data,'There was an error translating your text.');
 			}
 		} else {
-			$this->talk(&$irc,&$data,'TRANSLATE HELP: Usage: ,tr <language code> text.');
+			$this->talk($irc,$data,'TRANSLATE HELP: Usage: ,tr <language code> text.');
 		}
 	}
 
