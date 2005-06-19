@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/tikipro/tikipro.php,v 1.3 2005/06/19 09:08:22 wolff_borg Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/tikipro/tikipro.php,v 1.4 2005/06/19 10:30:51 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -28,9 +28,6 @@ if (!defined('TIKIPRO_URL'))  define('TIKIPRO_URL',  'http://localhost/tp/');  /
 
 class tikipro extends skill {
 
-	var $gTikiSystem;
-	var $statslib;
-
 	function tikipro() { 
 		$this->name = 'tikipro';
 		$this->description = "Tikipro skills provide the bot the ability to communicate with local tikipro instance.";
@@ -40,18 +37,13 @@ class tikipro extends skill {
 			'name'     => 'Tikipro',
 			'help'     => 'Type ,tp <command> <something> to execute a request. ,t help to have a list.'
 		);
-		$oldpath = getcwd();
-		chdir(TIKIPRO_PATH);
-		include_once("tiki_setup_inc.php");
+		
+		include_once( TIKIPRO_PATH."tiki_setup_inc.php" );
+		include_once( DIRECTORY_PKG_PATH."dir_lib.php" );
 		include_once( STATS_PKG_PATH."stats_lib.php" );
 		include_once( USERS_PKG_PATH."TikiUser.php" );
 		include_once( WIKI_PKG_PATH."TikiPage.php" );
 		include_once( WIKI_PKG_PATH."wiki_lib.php" );
-		chdir($oldpath);
-		$this->gTikiSystem =& $gTikiSystem;
-		$this->gTikiUser =& $gTikiUser;
-		$this->statslib =& $statslib;
-		$this->wikilib =& $wikilib;
 	}
 
 // **************************************************************************
@@ -61,7 +53,8 @@ class tikipro extends skill {
 		if (isset($args[0]) && ($args[0] == 'help' || $args[0] == '?')) {
 			return "[,tp rpage] Returns a random wiki page url.";
 		} else {
-			$page = array_pop($this->wikilib->get_random_pages("1"));
+			global $wikilib;
+			$page = array_pop($wikilib->get_random_pages("1"));
 			$page = htmlspecialchars($page);
 			/* Change the whitespace into _*/
 			$page = preg_replace("/ /", "+", $page);
@@ -93,7 +86,8 @@ class tikipro extends skill {
 		if ((isset($args[0]) && ($args[0] == 'help' || $args[0] == '?'))) {
 			return "[,tp stats] Returns statistics of usage of ".TIKIPRO_NAME;
 		} else {
-			$i = $this->statslib->site_stats();
+			global $statslib;
+			$i = $statslib->site_stats();
 			return "Since ".date("Y-m-d",$i["started"])." (".$i["days"]." days) we got ".$i["pageviews"]." pages viewed on ".TIKIPRO_NAME." (".round($i["ppd"])." per day).";
 		}
 	}
@@ -103,7 +97,8 @@ class tikipro extends skill {
 			return "[,tp dir] Returns the last added directory site";
 		} else {
 			if (!isset($args[0]) or $args[0] < 0 or $args[0] > 20) { $args[0] = 0; }
-			$dir = $this->gTikiSystem->dir_list_all_valid_sites2($args[0], 1, 'created_desc', '');
+			global $dirlib;
+			$dir = $dirlib->dir_list_all_valid_sites($args[0], 1, 'created_desc', '');
 			return "Directory ( ".$args[0]." )( ".$dir['data'][0]['name']." )( ".$dir['data'][0]['url']." )";
 		}
 	}
