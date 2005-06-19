@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/conf.php,v 1.1 2004/07/05 18:48:30 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/conf.php,v 1.2 2005/06/19 09:18:15 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -29,10 +29,9 @@
 
 #  $conf['join'][] = '#lulubot';
 
-#  $conf['join'][] = '#test';
+#  $conf['join'][] = '#lulutest';
 
-#  $conf['skills'] = array();
-
+// Skills config
 $conf['skills'][] = 'nickometer';
 
 $conf['skills'][] = 'faq';
@@ -58,5 +57,12 @@ $conf['skills'][] = 'lulu';
 #  define('TIKIPRO_NAME', 'tp.o');
 #  define('TIKIPRO_PATH', '/var/www/tikipro/');    // don't forget ending slash
 #  define('TIKIPRO_URL',  'http://localhost/tikipro/');  // don't forget ending slash
+
+global $_SERVER;
+// use this setting to set multi-domain tiki sites
+$_SERVER["HTTP_HOST"] = "lulubot";
+$_SERVER["SERVER_NAME"] = "lulubot";
+$_SERVER["HTTP_USER_AGENT"] = "lulubot";
+$_SERVER["REMOTE_ADDR"] = "";
 
 ?>
