@@ -1,5 +1,5 @@
 <?php
-/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/php/php.php,v 1.1 2004/07/05 18:48:32 mose Exp $
+/*$Header: /home/xubuntu/berlios_backup/github/tmp-cvs/lulubot/Repository/lulubot/skills/php/php.php,v 1.2 2005/06/19 09:01:34 wolff_borg Exp $
 
   Copyright (c) 2004 mose & Lulu Enterprises, Inc.
   http://lulubot.berlios.de/
@@ -45,11 +45,11 @@ class php extends skill {
 			$buf = fgets($fp, 10000);
 			if (substr($buf,0,strpos($buf,'(')) == $request) {
 				ereg("^(.+)\((.+)\) (.+)$", $buf, $regs);
-				$this->talk(&$irc,&$data,$regs[1]." (".$regs[2].") - ".trim($regs[3])." - http://php.net/".$regs[1]);
+				$this->talk($irc,$data,$regs[1]." (".$regs[2].") - ".trim($regs[3])." - http://php.net/".$regs[1]);
 				return;
 			}
 		}
-		$this->talk(&$irc,&$data,'No PHP function named '.$request);
+		$this->talk($irc,$data,'No PHP function named '.$request);
 	}
 
 }
